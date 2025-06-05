@@ -1,14 +1,23 @@
+import os
 import re
 import asyncio
+import logging
 from datetime import date
 from telegram import Update
 from telegram.ext import Application, MessageHandler, ContextTypes, filters
 import nest_asyncio
 
+# === LOGGING SETUP ===
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # === CONFIG ===
-BOT_TOKEN = '7859097671:AAFFSVN6qM2Mb_fjcq23CvLso4HFSnFaRCE'
-TARGET_CHANNEL = '@datafilterforodoo'
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+TARGET_CHANNEL = os.getenv("TARGET_CHANNEL")
 KEYWORDS = ['RELAX', 'LUX', "MO'TABAR", 'MO‘TABAR', 'NIXOL']
+
+if not BOT_TOKEN or not TARGET_CHANNEL:
+    raise EnvironmentError("BOT_TOKEN or TARGET_CHANNEL not set in environment variables.")
 
 # === CLEANING HELPERS ===
 def remove_emojis(text):
@@ -25,26 +34,26 @@ def clean_row(line):
 async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.channel_post and update.channel_post.text:
         message = update.channel_post.text
-        print(f"\n📡 Channel post received:\n{message}\n---")
+        logger.info(f"\n📡 Channel post received:\n{message}\n---")
 
         rows = message.split('\n')
         for row in rows:
-            print(f"🔍 Checking row: {row}")
+            logger.debug(f"🔍 Checking row: {row}")
             if is_valid_row(row):
                 cleaned = clean_row(row)
                 today = date.today().isoformat()
                 message_to_send = f"{today} | {cleaned}"
-                print(f"✅ Sending: {message_to_send}")
+                logger.info(f"✅ Sending: {message_to_send}")
                 await context.bot.send_message(chat_id=TARGET_CHANNEL, text=message_to_send)
                 await asyncio.sleep(5)
             else:
-                print("⏭️ Skipped row.")
+                logger.debug("⏭️ Skipped row.")
 
 # === MAIN ===
 async def run_bot():
     app = Application.builder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.UpdateType.CHANNEL_POST & filters.TEXT, handle_channel_post))
-    print("🚀 Bot is running and watching @datatodashboards (channel posts)...")
+    logger.info("🚀 Bot is running and watching @datatodashboards (channel posts)...")
     await app.initialize()
     await app.start()
     await app.updater.start_polling()
