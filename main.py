@@ -1,5 +1,7 @@
+import os
 import re
 import asyncio
+import requests
 from datetime import date
 from telegram import Update
 from telegram.ext import Application, MessageHandler, ContextTypes, filters
@@ -8,6 +10,7 @@ import nest_asyncio
 # === CONFIG ===
 BOT_TOKEN = '7859097671:AAFFSVN6qM2Mb_fjcq23CvLso4HFSnFaRCE'
 TARGET_CHANNEL = '@datafilterforodoo'
+ZAP_WEBHOOK_URL = 'https://hooks.zapier.com/hooks/catch/20489032/2vzvvrp/'
 KEYWORDS = ['RELAX', 'LUX', "MO'TABAR", 'MO‘TABAR', 'NIXOL']
 
 # === CLEANING HELPERS ===
@@ -34,8 +37,21 @@ async def handle_channel_post(update: Update, context: ContextTypes.DEFAULT_TYPE
                 cleaned = clean_row(row)
                 today = date.today().isoformat()
                 message_to_send = f"{today} | {cleaned}"
-                print(f"✅ Sending: {message_to_send}")
+                print(f"✅ Message to send: {message_to_send}")
+
+                # Send to Telegram
                 await context.bot.send_message(chat_id=TARGET_CHANNEL, text=message_to_send)
+
+                # Send to Zapier
+                try:
+                    response = requests.post(
+                        ZAP_WEBHOOK_URL,
+                        json={"message": message_to_send}
+                    )
+                    print(f"🌐 Sent to Zapier: {response.status_code}")
+                except Exception as e:
+                    print(f"❌ Zapier error: {e}")
+
                 await asyncio.sleep(5)
             else:
                 print("⏭️ Skipped row.")
