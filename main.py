@@ -3,6 +3,7 @@ import asyncio
 import re
 import requests
 from datetime import date
+import nest_asyncio
 
 # === CONFIG ===
 api_id = 26347537  # Replace with your API ID
