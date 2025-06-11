@@ -44,7 +44,7 @@ async def handler(event):
             # Replace emojis immediately before /50 with 'v/50'
             row = re.sub(
                 r'([\w ]+)[\U00010000-\U0010ffff\U0001F300-\U0001F6FF\U0001F1E0-\U0001F1FF]+/50',
-                r'\1 V/50',
+                r'\1 v/50',
                 row
             )
             # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
