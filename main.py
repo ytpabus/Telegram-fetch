@@ -15,7 +15,7 @@ keywords = ['RELAX', 'LUX', "MO'TABAR", 'MO‘TABAR', 'NIXOL']
 client = TelegramClient('session_name', api_id, api_hash)
 
 def remove_emojis(text):
-    # Replace emoji with space, not empty string
+    # Replace emoji with space
     return re.sub(r'[\U00010000-\U0010ffff\U0001F300-\U0001F6FF\U0001F1E0-\U0001F1FF]+', ' ', text)
 
 def is_valid_row(line):
@@ -23,7 +23,7 @@ def is_valid_row(line):
     return any(k in clean_line.upper() for k in keywords) and '/50' in clean_line
 
 def clean_row(line):
-    # Remove emojis, collapse multiple spaces
+    # Remove emojis (replace with spaces), collapse multiple spaces, strip
     return re.sub(' +', ' ', remove_emojis(line)).strip()
 
 @client.on(events.NewMessage(chats=source_channel))
@@ -31,13 +31,12 @@ async def handler(event):
     try:
         msg_text = event.message.text or event.message.caption
         if not msg_text:
-            return  # Ignore messages without text or captions
+            return
 
         print(f"\n📡 New message received:\n{msg_text}\n---")
 
         rows = msg_text.split('\n')
         for row in rows:
-            # ===== NO MORE v/50 replacement! =====
             print(f"🔍 Checking row: {row}")
             if is_valid_row(row):
                 cleaned = clean_row(row)
