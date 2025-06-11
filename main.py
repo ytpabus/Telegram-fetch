@@ -17,6 +17,7 @@ client = TelegramClient('session_name', api_id, api_hash)
 
 # === CLEANING HELPERS ===
 def remove_emojis(text):
+    return re.sub(r'[\U00010000-\U0010ffff\U0001F300-\U0001F6FF\U0001F1E0-\U0001F1FF]+', '', text)
     # Replace emoji with space, not empty string
     return re.sub(r'[\U00010000-\U0010ffff\U0001F300-\U0001F6FF\U0001F1E0-\U0001F1FF]+', ' ', text)
 
