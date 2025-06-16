@@ -18,13 +18,19 @@ def remove_emojis(text):
     # Replace emoji with space
     return re.sub(r'[\U00010000-\U0010ffff\U0001F300-\U0001F6FF\U0001F1E0-\U0001F1FF]+', ' ', text)
 
+def clean_row(line):
+    # Replace emojis with a single space and collapse multiple spaces
+    cleaned_text = re.sub(r'[\U00010000-\U0010ffff]+', ' ', line)  # Remove emojis
+    cleaned_text = re.sub(' +', ' ', cleaned_text).strip()  # Remove extra spaces
+
+    return cleaned_text
+    
 def is_valid_row(line):
     clean_line = remove_emojis(line).strip()
     return any(k in clean_line.upper() for k in keywords) and '/50' in clean_line
 
-def clean_row(line):
-    # Remove emojis (replace with spaces), collapse multiple spaces, strip
-    return re.sub(' +', ' ', remove_emojis(line)).strip()
+
+
 
 @client.on(events.NewMessage(chats=source_channel))
 async def handler(event):
