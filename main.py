@@ -8,7 +8,7 @@ import nest_asyncio
 # === CONFIG ===
 api_id = 26347537
 api_hash = '68a4fac4e5b6c85067787bbc2f343631'
-source_channel = 'https://t.me/datatodashboards'
+source_channel = 'https://t.me/motabar_andijon'
 zap_webhook_url = 'https://hooks.zapier.com/hooks/catch/20489032/2vzvvrp/'
 keywords = ['RELAX', 'LUX', "MO'TABAR", 'MO‘TABAR', 'NIXOL']
 
